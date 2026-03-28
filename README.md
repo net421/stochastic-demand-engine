@@ -1,2 +1,7 @@
-# Forcasting-
-This repository contain code to predict how probable is to an event to happen, and a example of data base of a store to preditc its demand.
+# Stochastic Demand Engine
+
+A stochastic modeling framework for retail demand prediction using:
+
+- Poisson processes
+- Queueing theory (M/M/1)
+- Simulation
