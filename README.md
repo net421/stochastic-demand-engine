@@ -1,147 +1,185 @@
-# Stochastic Demand Engine
+# Near-Critical Systems: Inverse Gaussian First-Passage Dynamics
 
-### Poisson Processes + Queueing Theory for Retail Systems
-
----
-
-## 1. Problem Definition
-
-Retail systems operate under conditions of **stochastic demand uncertainty**, where customer arrivals are inherently random, service capacity is finite, and congestion emerges as an endogenous property of the system. Traditional deterministic models fail to capture this variability.
-
-This project develops a stochastic framework to model demand as a probabilistic arrival process and evaluate operational performance through queueing theory.
+📄 **Paper:** *(manuscript currently under review; PDF available in `/paper`)*
+📊 **Field:** Operations Research · Reliability Engineering · Stochastic Processes
+⚙️ **Reproducibility:** Full simulation pipeline included
 
 ---
 
-## 2. Theoretical Framework
+## 🔬 Overview
 
-Customer arrivals are modeled using a **Poisson process**, defined as:
+This repository contains a fully reproducible computational framework for analyzing **first-passage collapse dynamics** in capacity-constrained systems operating near their stability boundary.
 
-P(N = k) = (λ^k e^{-λ}) / k!
+We study systems governed by:
 
-where λ represents the arrival rate (demand intensity), and k denotes the number of arrivals within a given time interval.
+* Demand: ( D(t) \sim \text{Poisson}(\lambda) )
+* Disruptions: ( B(t) \sim \text{Bernoulli}(1 - p) )
+* State evolution:
 
-To evaluate system performance, the model adopts an **M/M/1 queueing structure**, assuming:
+[
+I(t+1) = I(t) + B(t)\cdot C - D(t)
+]
 
-* Poisson arrivals (λ)
-* Exponentially distributed service times (μ)
-* A single service channel
-
-Key performance metrics include:
-
-* Utilization: ρ = λ / μ
-* Expected number of customers in the system: L = ρ / (1 - ρ)
-* Expected time spent in the system: W = 1 / (μ - λ)
-
----
-
-## 3. System Architecture
-
-The repository is structured as a modular stochastic modeling pipeline:
-
-* `data/` → synthetic store data generation
-* `models/` → Poisson demand and queueing models
-* `simulation/` → system behavior simulation
-* `utils/` → performance metrics
-* `main.py` → integrated execution pipeline
+Collapse occurs at the first-passage time:
+[
+\tau = \min { t : I(t) < -X_0 }
+]
 
 ---
 
-## 4. Features
+## 🧠 Key Contributions
 
-The system implements:
+* **Inverse Gaussian (IG)** emerges as the dominant distribution in drift-dominated regimes
+* Introduction of the **jump ratio**:
 
-* Demand estimation using Poisson processes
-* Weekday-based approximation of non-homogeneous demand
-* Queue performance evaluation via M/M/1 theory
-* Simulation of congestion dynamics
-* Modular architecture enabling extensibility
+[
+R_J = \frac{X_0}{\lambda}
+]
 
----
+* Identification of **two collapse regimes**:
 
-## 5. Example Output
+  * Drift-dominated (diffusion-valid)
+  * Jump-dominated (diffusion breakdown)
 
-Typical execution produces:
+* Demonstration of **Decreasing Failure Rate (DFR)** across all configurations
 
-Demand forecast: [18, 21, 19, 25, 30, 28, 17...]
-
-Queue metrics:
-ρ = 0.78
-L = 3.54
-W = 0.18
-
-Simulation results:
-avg_queue = 3.2
-max_queue = 9
+* Proof that **mean collapse time is misleading** for risk assessment
 
 ---
 
-## 6. Installation and Usage
+## 📊 Main Results
 
-Install dependencies and run the model:
+* IG provides best fit in **14/15 configurations**
+* Hazard function strictly decreasing (Spearman ( \rho < -0.93 ))
+* Mean residual life increases up to **6.5× conditional survival**
+* **72% of systems fail before the mean collapse time**
 
+---
+
+## ⚙️ Reproducibility
+
+### Requirements
+
+```bash
 pip install -r requirements.txt
-python main.py
+```
+
+Dependencies are strictly pinned for reproducibility.
 
 ---
 
-## 7. Structural Insights
+### Full Pipeline Execution
 
-The system reveals a fundamental operational contradiction:
+```bash
+python src/run_all.py
+```
 
-* Increasing demand (λ ↑) improves revenue potential
-* But simultaneously increases congestion (ρ → 1)
+**Pipeline includes:**
 
-System stability requires:
+1. Primary simulation (50,000 paths × 15 configurations)
+2. Vuong likelihood ratio tests
+3. Diagnostic decomposition (CDF, hazard, mechanisms)
+4. Supplementary analyses
+5. Cross-validation (independent implementation)
+6. Figure generation (publication-quality)
 
-λ < μ
-
-If λ ≥ μ, the system becomes unstable, leading to theoretically unbounded queue growth.
-
----
-
-## 8. Limitations
-
-The current implementation assumes:
-
-* Exponential service time distribution
-* Single-server system
-* No behavioral modeling of customers
-* No integration with inventory dynamics
-
-These assumptions simplify analysis but limit realism in complex environments.
+⏱️ **Total runtime:** ~55–75 minutes
 
 ---
 
-## 9. Future Work
+## 📁 Repository Structure
 
-Potential extensions include:
-
-* Non-homogeneous Poisson processes λ(t)
-* Multi-server queueing systems (M/M/c)
-* Bayesian inference for demand estimation
-* Reinforcement learning for dynamic staffing
-* High-fidelity discrete-event simulation (digital twin)
-
----
-
-## 10. Research and Industry Relevance
-
-This project integrates concepts from:
-
-* Operations Research
-* Stochastic Processes
-* Service Systems Engineering
-* Supply Chain Analytics
-
-Its applications extend to:
-
-* Retail operations
-* Call centers
-* Logistics and distribution systems
-* E-commerce fulfillment
+```
+near-critical-systems/
+├── src/        # Simulation and analysis code
+├── results/    # Figures, tables, raw data
+├── paper/      # Manuscript and supplementary materials
+├── docs/       # Model and methodology documentation
+```
 
 ---
 
-## 11. Author
+## 🔁 Simulation Design
 
-Developed as a stochastic systems modeling project focused on integrating probabilistic demand modeling, queueing theory, and simulation-based analysis into a unified analytical framework.
+* Capacity: ( C = 100 )
+* Buffer: ( X_0 = 50 )
+
+Parameter space:
+
+* Utilization: ( \lambda/C \in {0.40, 0.55, 0.70, 0.80, 0.95} )
+* Supercritical margin: ( \delta \in {0.005, 0.01, 0.02} )
+
+Total configurations: **15**
+Total simulations per configuration: **50,000 paths**
+
+---
+
+## 📈 Generated Outputs
+
+The pipeline produces:
+
+* Distributional fits (IG vs Lognormal)
+* Hazard function estimates
+* TTT-transform diagnostics
+* Regime classification map
+* Tail risk and quantile tables
+
+All outputs are stored in `/results`.
+
+---
+
+## 🧪 Validation & Robustness
+
+* Independent **pure-Python cross-validation**
+* **Vuong likelihood decomposition**
+* Mechanism-level analysis (overshoot, disruption structure)
+* Sensitivity analyses:
+
+  * Buffer size
+  * Correlated disruptions (Gilbert–Elliott)
+  * Scale invariance
+
+---
+
+## 🧠 Practical Implications
+
+* Age-based maintenance is **suboptimal under DFR dynamics**
+* Systems exhibit **endogenous survivorship selection**
+* **Condition-based monitoring is theoretically justified**
+* Quantile-based metrics outperform mean-based decision rules
+
+---
+
+## 📄 Paper & Supplementary Material
+
+Located in `/paper`:
+
+* `manuscript.pdf` — Main article
+* `supplementary.pdf` — Extended results and validation
+* `highlights.txt` — Key findings
+
+---
+
+## 👤 Author
+
+**Emmanuel Beristain Guzmán**
+Logistics Engineer — Supply Chain Optimization & Data Analysis
+
+---
+
+## 📜 License
+
+MIT License
+
+---
+
+## 📌 Citation
+
+```bibtex
+@article{beristain2026nearcritical,
+  title={Decreasing Failure Rate in Near-Critical Systems: Inverse Gaussian First-Passage Dynamics},
+  author={Beristain Guzmán, Emmanuel},
+  year={2026}
+}
+```
+
