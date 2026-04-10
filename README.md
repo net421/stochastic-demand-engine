@@ -1,16 +1,35 @@
 # Near-Critical Systems: Inverse Gaussian First-Passage Dynamics
 
-📄 **Paper:** *(manuscript currently under review; PDF available in `/paper`)*
+📄 **Paper:** *(manuscript currently under peer review; PDF available in `/paper`)*
 📊 **Field:** Operations Research · Reliability Engineering · Stochastic Processes
-⚙️ **Reproducibility:** Full simulation pipeline included
+⚙️ **Reproducibility:** Full simulation and analysis pipeline provided
 
 ---
 
-## 🔬 Overview
+## 🔬 Repository Purpose
 
-This repository contains a fully reproducible computational framework for analyzing **first-passage collapse dynamics** in capacity-constrained systems operating near their stability boundary.
+This repository is the **official computational companion** to the research manuscript:
 
-We study systems governed by:
+> *“Decreasing Failure Rate in Near-Critical Systems: Inverse Gaussian First-Passage Dynamics and Hazard-Structure Characterization”*
+
+The purpose of this repository is to ensure **complete transparency, reproducibility, and validation** of all results presented in the manuscript.
+
+Specifically, it contains:
+
+* All simulation code used to generate the results
+* All statistical analyses and model fitting procedures
+* All figure and table generation scripts
+* Full pipeline to reproduce the manuscript outputs from scratch
+
+👉 Every figure, table, and numerical result in the paper can be regenerated directly from this repository.
+
+---
+
+## 🧠 Scientific Context
+
+We study **first-passage collapse dynamics** in capacity-constrained systems operating near their stability boundary.
+
+System dynamics:
 
 * Demand: ( D(t) \sim \text{Poisson}(\lambda) )
 * Disruptions: ( B(t) \sim \text{Bernoulli}(1 - p) )
@@ -20,143 +39,153 @@ We study systems governed by:
 I(t+1) = I(t) + B(t)\cdot C - D(t)
 ]
 
-Collapse occurs at the first-passage time:
+Collapse is defined as the first-passage time:
+
 [
 \tau = \min { t : I(t) < -X_0 }
 ]
 
 ---
 
-## 🧠 Key Contributions
+## 🚀 Core Contributions of the Research
 
-* **Inverse Gaussian (IG)** emerges as the dominant distribution in drift-dominated regimes
-* Introduction of the **jump ratio**:
+This work makes four primary contributions:
+
+### 1. Distributional Characterization of Collapse Times
+
+* Demonstrates that the **Inverse Gaussian distribution** provides the best fit in 14/15 configurations
+* Quantifies when the diffusion approximation is valid vs. when it breaks down
+
+---
+
+### 2. Introduction of the Jump Ratio (New Diagnostic)
 
 [
 R_J = \frac{X_0}{\lambda}
 ]
 
-* Identification of **two collapse regimes**:
-
-  * Drift-dominated (diffusion-valid)
-  * Jump-dominated (diffusion breakdown)
-
-* Demonstration of **Decreasing Failure Rate (DFR)** across all configurations
-
-* Proof that **mean collapse time is misleading** for risk assessment
+* A **dimensionless parameter** governing collapse dynamics
+* Provides a principled way to classify system behavior
 
 ---
 
-## 📊 Main Results
+### 3. Two-Regime Structure of Collapse Dynamics
 
-* IG provides best fit in **14/15 configurations**
-* Hazard function strictly decreasing (Spearman ( \rho < -0.93 ))
-* Mean residual life increases up to **6.5× conditional survival**
-* **72% of systems fail before the mean collapse time**
+* **Drift-dominated regime** (diffusion-valid, IG dominant)
+* **Jump-dominated regime** (single-event collapse, diffusion breakdown)
+
+👉 Establishes that regime classification is **inherently two-dimensional**
+(dependent on both ( R_J ) and utilization ( \lambda/C ))
+
+---
+
+### 4. Discovery and Mechanistic Explanation of DFR Behavior
+
+* Confirms **Decreasing Failure Rate (DFR)** across all configurations
+* Identifies **endogenous survivorship selection** as the mechanism
+
+Key implication:
+
+> Systems that survive longer become *less likely to fail*, contradicting standard reliability assumptions.
+
+---
+
+### 5. Operational Implication (Critical)
+
+* Mean collapse time is **systematically misleading**
+* Up to **72% of systems fail before the mean**
+
+👉 Supports transition to:
+
+* Quantile-based risk metrics
+* Condition-based monitoring strategies
+
+---
+
+## 📊 Simulation Framework
+
+* 15 configurations:
+
+  * ( \lambda/C \in {0.40, 0.55, 0.70, 0.80, 0.95} )
+  * ( \delta \in {0.005, 0.01, 0.02} )
+
+* Per configuration:
+
+  * **50,000 simulated paths**
+  * Monte Carlo estimation of collapse times
 
 ---
 
 ## ⚙️ Reproducibility
 
-### Requirements
+### Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Dependencies are strictly pinned for reproducibility.
-
 ---
 
-### Full Pipeline Execution
+### Run full pipeline
 
 ```bash
 python src/run_all.py
 ```
 
-**Pipeline includes:**
+This will:
 
-1. Primary simulation (50,000 paths × 15 configurations)
-2. Vuong likelihood ratio tests
-3. Diagnostic decomposition (CDF, hazard, mechanisms)
-4. Supplementary analyses
-5. Cross-validation (independent implementation)
-6. Figure generation (publication-quality)
+1. Run all simulations
+2. Perform statistical fitting (IG vs Lognormal, etc.)
+3. Execute diagnostic analyses
+4. Generate all manuscript figures and tables
 
-⏱️ **Total runtime:** ~55–75 minutes
+⏱️ Runtime: ~55–75 minutes
 
 ---
 
 ## 📁 Repository Structure
 
 ```
-near-critical-systems/
-├── src/        # Simulation and analysis code
-├── results/    # Figures, tables, raw data
-├── paper/      # Manuscript and supplementary materials
-├── docs/       # Model and methodology documentation
+src/        → Simulation and analysis code  
+results/    → Generated figures, tables, raw data  
+paper/      → Manuscript and supplementary materials  
+docs/       → Model and methodology explanations  
 ```
 
 ---
 
-## 🔁 Simulation Design
+## 📈 Outputs
 
-* Capacity: ( C = 100 )
-* Buffer: ( X_0 = 50 )
+The pipeline reproduces:
 
-Parameter space:
-
-* Utilization: ( \lambda/C \in {0.40, 0.55, 0.70, 0.80, 0.95} )
-* Supercritical margin: ( \delta \in {0.005, 0.01, 0.02} )
-
-Total configurations: **15**
-Total simulations per configuration: **50,000 paths**
-
----
-
-## 📈 Generated Outputs
-
-The pipeline produces:
-
-* Distributional fits (IG vs Lognormal)
-* Hazard function estimates
-* TTT-transform diagnostics
-* Regime classification map
-* Tail risk and quantile tables
-
-All outputs are stored in `/results`.
+* Distributional comparisons (IG vs Lognormal)
+* Hazard functions and DFR diagnostics
+* TTT-transform analysis
+* Regime classification maps
+* Tail risk and quantile statistics
 
 ---
 
 ## 🧪 Validation & Robustness
 
-* Independent **pure-Python cross-validation**
-* **Vuong likelihood decomposition**
-* Mechanism-level analysis (overshoot, disruption structure)
+* Independent cross-validation (pure Python implementation)
+* Vuong likelihood ratio test
+* Mechanism decomposition (overshoot, disruption structure)
 * Sensitivity analyses:
 
   * Buffer size
-  * Correlated disruptions (Gilbert–Elliott)
+  * Correlated disruptions
   * Scale invariance
-
----
-
-## 🧠 Practical Implications
-
-* Age-based maintenance is **suboptimal under DFR dynamics**
-* Systems exhibit **endogenous survivorship selection**
-* **Condition-based monitoring is theoretically justified**
-* Quantile-based metrics outperform mean-based decision rules
 
 ---
 
 ## 📄 Paper & Supplementary Material
 
-Located in `/paper`:
+Available in `/paper`:
 
-* `manuscript.pdf` — Main article
-* `supplementary.pdf` — Extended results and validation
-* `highlights.txt` — Key findings
+* `manuscript.pdf`
+* `supplementary.pdf`
+* `highlights.txt`
 
 ---
 
@@ -177,7 +206,7 @@ MIT License
 
 ```bibtex
 @article{beristain2026nearcritical,
-  title={Decreasing Failure Rate in Near-Critical Systems: Inverse Gaussian First-Passage Dynamics},
+  title={Decreasing Failure Rate in Near-Critical Systems},
   author={Beristain Guzmán, Emmanuel},
   year={2026}
 }
